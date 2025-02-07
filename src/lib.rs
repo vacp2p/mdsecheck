@@ -1,7 +1,7 @@
 use ark_ff::PrimeField;
-use ark_poly::{polynomial::univariate::DensePolynomial, DenseUVPolynomial, Polynomial};
+use ark_poly::{polynomial::univariate::DensePolynomial, DenseUVPolynomial};
+use indexmap::IndexSet;
 use rand::Rng;
-use std::collections::HashSet;
 
 pub mod mat;
 pub mod num;
@@ -12,7 +12,7 @@ pub fn random_cauchy<F: PrimeField>(n: u32, r: &mut (impl Rng + ?Sized)) -> Opti
         return None;
     }
     let n = n as usize;
-    let mut d = HashSet::with_capacity(2 * n);
+    let mut d = IndexSet::with_capacity(2 * n);
     for _ in 0..2 * n {
         while !d.insert(F::rand(r)) {}
     }
@@ -27,11 +27,11 @@ pub fn random_cauchy<F: PrimeField>(n: u32, r: &mut (impl Rng + ?Sized)) -> Opti
     Some(m)
 }
 
-pub fn secure_rounds<F: PrimeField>(a: &[impl AsRef<[F]>], l: usize) -> Option<usize> {
-    if l == 0 {
+pub fn secure_rounds<F: PrimeField>(a: &[impl AsRef<[F]>], l: u32) -> Option<u32> {
+    let n = a.len();
+    if (n < 2) || (l == 0) {
         return None;
     }
-    let n: usize = a.len();
     let mut m = Vec::<Vec<F>>::with_capacity(n);
     m.push(vec![F::ONE; n]);
     for i in 0..n - 1 {
@@ -50,13 +50,13 @@ pub fn secure_rounds<F: PrimeField>(a: &[impl AsRef<[F]>], l: usize) -> Option<u
     let f = num::prime_divisors(n as u32)
         .into_iter()
         .map(|e| n / e as usize)
-        .collect::<HashSet<usize>>();
+        .collect::<IndexSet<usize>>();
     let mut y: Vec<DensePolynomial<F>> = Vec::<DensePolynomial<F>>::with_capacity(f.len());
-    let x = poly::new(&[0u64, 1u64]);
+    let x = poly::new(&[1, 0]);
     let mut r = x.clone();
     for d in 1..=n / 2 {
         r = poly::power_modulo(&r, F::characteristic(), &c)?;
-        if poly::nonmonic_gcd(&(&r - &x), &c).degree() > 0 {
+        if !poly::coprimality(&(&r - &x), &c) {
             return None;
         }
         if f.contains(&d) {

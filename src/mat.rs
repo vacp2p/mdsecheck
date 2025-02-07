@@ -1,23 +1,5 @@
 use ark_ff::Field;
 
-pub fn product_vector<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>> {
-    let k = b.len();
-    if (k == 0) || a.is_empty() {
-        // Either the matrix or the vector is empty
-        return None;
-    }
-    if a.iter().any(|s| s.as_ref().len() != k) {
-        // The arguments are not a matrix-vector pair for which the product is defined
-        return None;
-    }
-    let mut v = Vec::<F>::with_capacity(a.len());
-    for s in a.iter() {
-        let s = s.as_ref();
-        v.push((0..k).map(|i| s[i] * b[i]).sum());
-    }
-    Some(v)
-}
-
 pub fn product_matrix<F: Field>(
     a: &[impl AsRef<[F]>],
     b: &[impl AsRef<[F]>],
@@ -42,6 +24,23 @@ pub fn product_matrix<F: Field>(
         m.push(l);
     }
     Some(m)
+}
+
+pub fn product_vector<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>> {
+    let k = b.len();
+    if (k == 0) || a.is_empty() {
+        // Either the matrix or the vector is empty
+        return None;
+    }
+    if a.iter().any(|s| s.as_ref().len() != k) {
+        // The arguments are not a matrix-vector pair for which the product is defined
+        return None;
+    }
+    let mut v = Vec::<F>::with_capacity(a.len());
+    for s in a.iter() {
+        v.push(s.as_ref().iter().zip(b.iter()).map(|(x, y)| *x * y).sum());
+    }
+    Some(v)
 }
 
 pub fn unique_solution<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>> {

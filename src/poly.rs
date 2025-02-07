@@ -4,24 +4,23 @@ use ark_poly::{
     DenseUVPolynomial, Polynomial,
 };
 
-pub fn new<F: PrimeField>(c: &[impl Into<F> + Clone]) -> DensePolynomial<F> {
-    DensePolynomial::from_coefficients_vec(c.iter().map(|e| e.clone().into()).collect())
+pub fn coprimality<F: PrimeField>(a: &DensePolynomial<F>, b: &DensePolynomial<F>) -> bool {
+    let mut a = match reduced_modulo(a, b) {
+        Some(r) => r,
+        None => return !a.is_zero() && (a.degree() == 0),
+    };
+    let mut b = match reduced_modulo(b, &a) {
+        Some(r) => r,
+        None => return b.degree() == 0,
+    };
+    while let Some(r) = reduced_modulo(&a, &b) {
+        (a, b) = (b, r);
+    }
+    a.degree() == 0
 }
 
-pub fn reduced_modulo<F: PrimeField>(
-    p: &DensePolynomial<F>,
-    m: &DensePolynomial<F>,
-) -> Option<DensePolynomial<F>> {
-    // This check is to avoid a "divide_with_q_and_r" panic, since
-    // for some reason "divide_with_q_and_r" never returns None
-    if m.is_zero() {
-        return None;
-    }
-    Some(
-        DenseOrSparsePolynomial::from(p)
-            .divide_with_q_and_r(&DenseOrSparsePolynomial::from(m))?
-            .1,
-    )
+pub fn new<F: PrimeField>(c: &[impl Into<F> + Clone]) -> DensePolynomial<F> {
+    DensePolynomial::from_coefficients_vec(c.iter().rev().map(|e| e.clone().into()).collect())
 }
 
 pub fn power_modulo<F: PrimeField>(
@@ -40,20 +39,18 @@ pub fn power_modulo<F: PrimeField>(
     Some(r)
 }
 
-pub fn nonmonic_gcd<F: PrimeField>(
-    a: &DensePolynomial<F>,
-    b: &DensePolynomial<F>,
-) -> DensePolynomial<F> {
-    let mut a = match reduced_modulo(a, b) {
-        Some(r) => r,
-        None => return a.clone(),
-    };
-    let mut b = match reduced_modulo(b, &a) {
-        Some(r) => r,
-        None => return b.clone(),
-    };
-    while let Some(r) = reduced_modulo(&a, &b) {
-        (a, b) = (b, r);
+pub fn reduced_modulo<F: PrimeField>(
+    p: &DensePolynomial<F>,
+    m: &DensePolynomial<F>,
+) -> Option<DensePolynomial<F>> {
+    // This check is to avoid a "divide_with_q_and_r" panic, since
+    // for some reason "divide_with_q_and_r" never returns None
+    if m.is_zero() {
+        return None;
     }
-    a
+    Some(
+        DenseOrSparsePolynomial::from(p)
+            .divide_with_q_and_r(&DenseOrSparsePolynomial::from(m))?
+            .1,
+    )
 }

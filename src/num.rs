@@ -1,13 +1,3 @@
-pub fn reversed_bits(n: &[u64]) -> impl Iterator<Item = bool> + '_ {
-    n.iter()
-        .rev()
-        .copied()
-        .skip_while(|c| *c == 0)
-        .map(|c| c.reverse_bits())
-        .flat_map(|c| (0..64).map(move |b| c & (1 << b) != 0))
-        .skip_while(|b| !b)
-}
-
 pub fn prime_divisors(mut n: u32) -> Vec<u32> {
     if n < 2 {
         return vec![];
@@ -42,4 +32,14 @@ pub fn prime_divisors(mut n: u32) -> Vec<u32> {
         p.push(n)
     }
     p
+}
+
+pub fn reversed_bits(n: &[u64]) -> impl Iterator<Item = bool> + '_ {
+    n.iter()
+        .rev()
+        .copied()
+        .skip_while(|c| *c == 0)
+        .map(|c| c.reverse_bits())
+        .flat_map(|c| (0..64).map(move |b| c & (1 << b) != 0))
+        .skip_while(|b| !b)
 }
