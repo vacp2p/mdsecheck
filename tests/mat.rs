@@ -1,5 +1,5 @@
 use ark_bn254::Fr;
-use mdsecheck::mat::{product_matrix, product_vector, unique_solution};
+use mdsecheck::mat::{product_matrix, product_vector, system_solution};
 
 #[test]
 fn test_product_matrix() {
@@ -156,31 +156,31 @@ fn test_product_vector() {
 }
 
 #[test]
-fn test_unique_solution() {
+fn test_system_solution() {
     assert_eq!(
-        unique_solution(&[] as &[&[Fr]], &[Fr::from(1), Fr::from(2), Fr::from(3)]),
+        system_solution(&[] as &[&[Fr]], &[Fr::from(1), Fr::from(2), Fr::from(3)]),
         None
     );
     assert_eq!(
-        unique_solution(&[vec![]], &[Fr::from(3), Fr::from(2), Fr::from(1)]),
+        system_solution(&[vec![]], &[Fr::from(3), Fr::from(2), Fr::from(1)]),
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[[Fr::from(2), Fr::from(1)], [Fr::from(1), Fr::from(0)]],
             &[]
         ),
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[vec![Fr::from(3), Fr::from(4)], vec![Fr::from(5)]],
             &[Fr::from(6), Fr::from(7)]
         ),
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[
                 [Fr::from(1), Fr::from(2), Fr::from(3)],
                 [Fr::from(4), Fr::from(5), Fr::from(6)]
@@ -190,7 +190,7 @@ fn test_unique_solution() {
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[
                 [Fr::from(1), Fr::from(2)],
                 [Fr::from(2), Fr::from(3)],
@@ -201,7 +201,7 @@ fn test_unique_solution() {
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[
                 [Fr::from(1), Fr::from(2), Fr::from(3)],
                 [Fr::from(4), Fr::from(5), Fr::from(6)],
@@ -212,7 +212,7 @@ fn test_unique_solution() {
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[
                 [Fr::from(1), Fr::from(2), Fr::from(3)],
                 [Fr::from(4), Fr::from(5), Fr::from(6)],
@@ -223,7 +223,7 @@ fn test_unique_solution() {
         None
     );
     assert_eq!(
-        unique_solution(
+        system_solution(
             &[
                 [Fr::from(1), Fr::from(2), Fr::from(4)],
                 [Fr::from(1), Fr::from(3), Fr::from(9)],

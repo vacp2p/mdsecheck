@@ -1,5 +1,9 @@
+//! Provides auxiliary tools for working with matrices.
+
 use ark_ff::Field;
 
+/// Computes the matrix product of the arguments. If the arguments are
+/// not matrices for which the product is defined, then None is returned.
 pub fn product_matrix<F: Field>(
     a: &[impl AsRef<[F]>],
     b: &[impl AsRef<[F]>],
@@ -26,6 +30,8 @@ pub fn product_matrix<F: Field>(
     Some(m)
 }
 
+/// Computes the product of the specified matrix and column vector. If the arguments
+/// are not a matrix-vector pair for which the product is defined, then None is returned.
 pub fn product_vector<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>> {
     let k = b.len();
     if (k == 0) || a.is_empty() {
@@ -43,7 +49,11 @@ pub fn product_vector<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>
     Some(v)
 }
 
-pub fn unique_solution<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>> {
+/// Computes such a column vector that the product of the specified nonsingular
+/// matrix and it is equal to the specified column vector by means of the Gaussian
+/// elimination method. If the first argument is not a nonsingular matrix of the
+/// height of the specified vector, then None is returned.
+pub fn system_solution<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F>> {
     let n = a.len();
     if n == 0 {
         // The matrix is empty
@@ -62,6 +72,7 @@ pub fn unique_solution<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F
         }
         m.push([r, &[*v][..]].concat());
     }
+    // Obtaining the row echelon form of the augmented matrix
     for r in 0..n {
         if m[r][r] == F::ZERO {
             if let Some(p) = (r + 1..n).find(|y| m[*y][r] != F::ZERO) {
@@ -84,6 +95,8 @@ pub fn unique_solution<F: Field>(a: &[impl AsRef<[F]>], b: &[F]) -> Option<Vec<F
             }
         }
     }
+    // Transforming the rightmost column of the row
+    // echelon matrix into the sought column vector
     for r in (1..n).rev() {
         for y in 0..r {
             m[y][n] = m[y][n] - m[y][r] * m[r][n];

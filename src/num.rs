@@ -1,3 +1,7 @@
+//! Provides auxiliary tools for working with numbers.
+
+/// Computes the ascending list of prime numbers that divide
+/// the argument by means of the wheel factorization method.
 pub fn prime_divisors(mut n: u32) -> Vec<u32> {
     if n < 2 {
         return vec![];
@@ -26,6 +30,10 @@ pub fn prime_divisors(mut n: u32) -> Vec<u32> {
             extract(d, &mut n, &mut p);
             b = sqrt(n);
         }
+        // A trial divisor is either 5 or 6k + 1 or 6k + 5 for
+        // some positive integer k. Therefore, the difference
+        // between the (j + 1)-th and the j-th trial divisor
+        // is 2, if j is odd, and 4 otherwise
         (d, s) = (d + s, s ^ 6);
     }
     if n > 1 {
@@ -34,6 +42,11 @@ pub fn prime_divisors(mut n: u32) -> Vec<u32> {
     p
 }
 
+/// Creates an iterator over the bits of the argument's big-endian
+/// binary representation with leading zeroes removed. The argument
+/// is an unsigned integer represented by its 64-bit chunks stored
+/// in the little-endian order. If the argument is 0, an empty
+/// iterator is returned.
 pub fn reversed_bits(n: &[u64]) -> impl Iterator<Item = bool> + '_ {
     n.iter()
         .rev()
