@@ -29,3 +29,6 @@ loop {
     }
 }
 ```
+
+## Disclaimer
+The current version of this crate has not undergone a third-party security audit and is not intended for production use without proper security review.
