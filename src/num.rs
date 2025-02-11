@@ -7,7 +7,7 @@ pub fn prime_divisors(mut n: u32) -> Vec<u32> {
         return vec![];
     }
     let mut p = Vec::with_capacity(n.ilog2() as usize);
-    if n & 1 == 0 {
+    if n % 2 == 0 {
         p.push(2);
         n >>= n.trailing_zeros();
     }
@@ -30,10 +30,10 @@ pub fn prime_divisors(mut n: u32) -> Vec<u32> {
             extract(d, &mut n, &mut p);
             b = sqrt(n);
         }
-        // A trial divisor is either 5 or 6k + 1 or 6k + 5 for
-        // some positive integer k. Therefore, the difference
-        // between the (j + 1)-th and the j-th trial divisor
-        // is 2, if j is odd, and 4 otherwise
+        // At this point, a trial divisor is either 5 or 6k + 1
+        // or 6k + 5 for some positive integer k. Therefore, the
+        // difference between the (j + 1)-th and the j-th trial
+        // divisor is 2, if j is odd, and 4 otherwise
         (d, s) = (d + s, s ^ 6);
     }
     if n > 1 {
