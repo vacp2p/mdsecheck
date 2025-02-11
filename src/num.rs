@@ -33,7 +33,10 @@ pub fn prime_divisors(mut n: u32) -> Vec<u32> {
         // At this point, a trial divisor is either 5 or 6k + 1
         // or 6k + 5 for some positive integer k. Therefore, the
         // difference between the (j + 1)-th and the j-th trial
-        // divisor is 2, if j is odd, and 4 otherwise
+        // divisor is 2, if j is odd, and 4 otherwise. The value
+        // of the difference for the next iteration is computed
+        // from the current difference value in accordance with
+        // the equalities "2 xor 6 = 4" and "4 xor 6 = 2"
         (d, s) = (d + s, s ^ 6);
     }
     if n > 1 {
