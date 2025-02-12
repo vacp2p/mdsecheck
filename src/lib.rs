@@ -49,30 +49,41 @@ pub fn security_level<F: PrimeField>(a: &[impl AsRef<[F]>], l: u32) -> Option<u3
         // be used in P-SPN, or the second argument is 0
         return None;
     }
-    // Using the Krylov’s method fragment, which successfully
+    // Using the Krylov method fragment, which successfully
     // computes the minimal polynomial of the matrix, provided
     // that the polynomial is of maximum degree and irreducible,
     // fails if the polynomial is not of maximum degree and may
     // fail in other cases
     let mut m = Vec::<Vec<F>>::with_capacity(n);
+    // In this case, any non-zero vector can be chosen as the first Krylov vector
     m.push(vec![F::ONE; n]);
     for i in 0..n - 1 {
+        // Computing all required subsequent Krylov vectors except the last one
         m.push(mat::product_vector(a, &m[i])?);
     }
+    // The last Krylov vector is stored separately because it is the one
+    // that will be represented as a linear combination of the previous
+    // Krylov vectors, provided that they are linearly independent
     let b = mat::product_vector(a, &m[n - 1])?;
+    // Computing the horizontal concatenation of transposed elements of
+    // the computed Krylov vector sequence without its last element
     for y in 0..n {
         for x in 0..y {
             (m[y][x], m[x][y]) = (m[x][y], m[y][x]);
         }
     }
-    // If the function returns at this point, then the Krylov’s method fragment
-    // has failed. Consequently, the matrix is not unconditionally P-SPN secure
+    // Computing the coefficients of the aforementioned linear combination. If the
+    // function returns at this point, then the vectors of this linear combination
+    // are linearly dependent, implying that the minimal polynomial of the matrix
+    // cannot be of maximum degree and irreducible, which has allowed the Krylov
+    // method fragment to fail. Thus, the matrix is not unconditionally P-SPN secure
     let mut s = mat::system_solution(&m, &b)?;
+    // Computing the minimal polynomial from the coefficients of the linear combination
     s.iter_mut().for_each(|e| *e = -*e);
     s.push(F::ONE);
     let c = DensePolynomial::<F>::from_coefficients_vec(s);
     // Checking the irreducibility of the minimal polynomial, which has been found using
-    // the Krylov’s method fragment, by means of Algorithm 2.2.9 in the book "Prime Numbers -
+    // the Krylov method fragment, by means of Algorithm 2.2.9 in the book "Prime Numbers -
     // A Computational Perspective (2nd edn.)" by R. Crandall and C. Pomerance. Some values
     // computed in this step will be used in the next one
     let f = num::prime_divisors(n as u32)
