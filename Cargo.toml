@@ -2,6 +2,12 @@
 name = "mdsecheck"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "Tools for generating unconditionally secure square MDS matrices over prime finite fields for partial substitution-permutation networks, which are widespread designs of symmetric ciphers and hash functions."
+documentation = "https://github.com/vacp2p/mdsecheck"
+homepage = "https://vac.dev"
+keywords = ["mds-matrices", "p-spn", "spn", "hash-functions", "symmetric-ciphers", "cryptography"]
+repository = "https://github.com/vacp2p/mdsecheck"
 
 [dependencies]
 ark-ff = { version = "0.5.0", default-features = false, features = ["asm"] }
