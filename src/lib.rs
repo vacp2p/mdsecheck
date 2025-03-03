@@ -37,9 +37,9 @@ pub fn random_cauchy<F: PrimeField>(n: u32, r: &mut (impl Rng + ?Sized)) -> Opti
     Some(m)
 }
 
-/// Computes the largest positive number, which exceeds neither the round unconditional
-/// P-SPN security level of the specified MDS matrix, nor the second argument, by means
-/// of the MDSECheck method. The matrix is not checked for being MDS, so it should be
+/// Computes the largest positive number, which exceeds neither the unconditional P-SPN
+/// security level of the specified MDS matrix, nor the second argument, by means of
+/// the MDSECheck method. The matrix is not checked for being MDS, so it should be
 /// generated properly, e.g. using the tools the crate provides. If the matrix is not
 /// unconditionally P-SPN secure, then None is returned.
 pub fn security_level<F: PrimeField>(a: &[impl AsRef<[F]>], l: u32) -> Option<u32> {
@@ -116,8 +116,8 @@ pub fn security_level<F: PrimeField>(a: &[impl AsRef<[F]>], l: u32) -> Option<u3
             *v = poly::reduced_modulo(&(&*v * u), &c)?;
             if *v == g {
                 // For the current power of the matrix the minimal polynomial is not
-                // of maximum degree or not irreducible, so the round unconditional
-                // P-SPN security level of the matrix equals the previous exponent
+                // of maximum degree or not irreducible, so the unconditional P-SPN
+                // security level of the matrix equals the previous exponent
                 return Some(i - 1);
             }
         }

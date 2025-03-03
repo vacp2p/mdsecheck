@@ -1,11 +1,11 @@
 [package]
 name = "mdsecheck"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
-description = "Tools for generating unconditionally secure square MDS matrices over prime finite fields for partial substitution-permutation networks, which are widespread designs of symmetric ciphers and hash functions."
+description = "Tools for generating unconditionally secure square Cauchy MDS matrices over prime finite fields for partial substitution-permutation networks, which are widespread designs of symmetric ciphers and hash functions."
 documentation = "https://github.com/vacp2p/mdsecheck"
-homepage = "https://vac.dev"
+homepage = "https://vac.dev/rlog/mdsecheck-method"
 keywords = ["mds-matrices", "spn", "hash-functions", "symmetric-ciphers", "cryptography"]
 repository = "https://github.com/vacp2p/mdsecheck"
 
